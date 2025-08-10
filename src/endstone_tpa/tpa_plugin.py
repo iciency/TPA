@@ -11,12 +11,18 @@ class TpaPlugin(Plugin):
     api_version = "0.6"
     load = "POSTWORLD"
     tpa_requests: Dict[UUID, UUID] = {}
+    tpahere_requests: Dict[UUID, UUID] = {}
     
     commands = {
         "tpa": {
             "description": "Request to teleport to another player.",
             "usages": ["/tpa <player: player>"],
             "permissions": ["tpa.command.tpa"],
+        },
+        "tpahere": {
+            "description": "Request a player to teleport to you.",
+            "usages": ["/tpahere <player: player>"],
+            "permissions": ["tpa.command.tpahere"],
         },
         "tpaccept": {
             "description": "Accept a teleport request.",
@@ -37,6 +43,10 @@ class TpaPlugin(Plugin):
         },
         "tpa.command.tpa": {
             "description": "Allows users to use the /tpa command.",
+            "default": True,
+        },
+        "tpa.command.tpahere": {
+            "description": "Allows users to use the /tpahere command.",
             "default": True,
         },
         "tpa.command.tpaccept": {
@@ -89,39 +99,90 @@ class TpaPlugin(Plugin):
                 target.send_message("Type /tpaccept to accept or /tpdeny to deny.")
                 return True
 
+            case "tpahere":
+                if len(args) != 1:
+                    sender.send_message(f"Usage: {self.commands[command.name]['usages'][0]}")
+                    return False
+
+                target_name = args[0]
+                target = self.server.get_player(target_name)
+
+                if target is None:
+                    sender.send_message(f"Player '{target_name}' not found.")
+                    return True
+
+                if player == target:
+                    player.send_message("You cannot request to teleport yourself.")
+                    return True
+
+                self.tpahere_requests[target.unique_id] = player.unique_id
+                player.send_message(f"Teleport request sent to {target.name} for them to come to you.")
+                target.send_message(f"{player.name} has requested for you to teleport to them.")
+                target.send_message("Type /tpaccept to accept or /tpdeny to deny.")
+                return True
+
             case "tpaccept":
-                if player.unique_id not in self.tpa_requests:
-                    player.send_message("You have no pending teleport requests.")
+                # Check for TPA Here requests first
+                if player.unique_id in self.tpahere_requests:
+                    requester_uuid = self.tpahere_requests.pop(player.unique_id)
+                    requester = self.server.get_player(requester_uuid)
+
+                    if requester is None:
+                        player.send_message("The player who sent the request is no longer online.")
+                        return True
+                    
+                    loc = requester.location
+                    x, y, z = int(loc.x), int(loc.y), int(loc.z)
+                    
+                    tp_command = f"tp {x} {y} {z}"
+                    player.perform_command(tp_command)
+
+                    requester.send_message(f"{player.name} accepted your teleport request.")
+                    player.send_message(f"Teleporting to {requester.name}.")
                     return True
 
-                requester_uuid = self.tpa_requests.pop(player.unique_id)
-                requester = self.server.get_player(requester_uuid)
+                # Check for regular TPA requests
+                if player.unique_id in self.tpa_requests:
+                    requester_uuid = self.tpa_requests.pop(player.unique_id)
+                    requester = self.server.get_player(requester_uuid)
 
-                if requester is None:
-                    player.send_message("The player who sent the request is no longer online.")
+                    if requester is None:
+                        player.send_message("The player who sent the request is no longer online.")
+                        return True
+                    
+                    loc = player.location
+                    x, y, z = int(loc.x), int(loc.y), int(loc.z)
+
+                    tp_command = f"tp {x} {y} {z}"
+                    requester.perform_command(tp_command)
+
+                    requester.send_message(f"Teleport request to {player.name} accepted. Teleporting...")
+                    player.send_message(f"You have accepted the teleport request from {requester.name}.")
                     return True
-                
-                loc = player.location
-                x, y, z = int(loc.x), int(loc.y), int(loc.z)
 
-                tp_command = f"tp {x} {y} {z}"
-                requester.perform_command(tp_command)
-
-                requester.send_message(f"Teleport request to {player.name} accepted. Teleporting...")
-                player.send_message(f"You have accepted the teleport request from {requester.name}.")
+                player.send_message("You have no pending teleport requests.")
                 return True
 
             case "tpdeny":
-                if player.unique_id not in self.tpa_requests:
+                denied = False
+                if player.unique_id in self.tpahere_requests:
+                    requester_uuid = self.tpahere_requests.pop(player.unique_id)
+                    requester = self.server.get_player(requester_uuid)
+                    if requester:
+                         requester.send_message(f"{player.name} has denied your teleport request.")
+                    denied = True
+
+                if player.unique_id in self.tpa_requests:
+                    requester_uuid = self.tpa_requests.pop(player.unique_id)
+                    requester = self.server.get_player(requester_uuid)
+                    if requester:
+                        requester.send_message(f"{player.name} has denied your teleport request.")
+                    denied = True
+
+                if denied:
+                    player.send_message("You have denied the teleport request.")
+                else:
                     player.send_message("You have no pending teleport requests.")
-                    return True
-
-                requester_uuid = self.tpa_requests.pop(player.unique_id)
-                requester = self.server.get_player(requester_uuid)
-
-                player.send_message("You have denied the teleport request.")
-                if requester and requester.is_online:
-                    requester.send_message(f"{player.name} has denied your teleport request.")
                 return True
 
         return False
