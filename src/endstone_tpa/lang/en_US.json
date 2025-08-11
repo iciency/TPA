@@ -1,0 +1,23 @@
+{
+  "tpa.command.usage": "Usage: /tpa <player>",
+  "tpthere.command.usage": "Usage: /tpthere <player>",
+  "tpa.player_not_found": "Player '{0}' not found.",
+  "tpa.cannot_request_self": "You cannot send a teleport request to yourself.",
+  "tpa.request_sent": "Teleport request sent to {0}.",
+  "tpa.request_received": "{0} has requested to teleport to you.",
+  "tpthere.request_received": "{0} has requested you to teleport to them.",
+  "tpa.request_helper": "Type /tpaccept to accept or /tpdeny to deny. The request will expire in 60 seconds.",
+  "tpa.no_pending_request": "You have no pending teleport requests.",
+  "tpa.request_expired": "This teleport request has expired.",
+  "tpa.requester_expired": "Your teleport request to {0} has expired.",
+  "tpa.requester_not_online": "The player who sent the request is no longer online.",
+  "tpa.accepted_tpa": "Teleport request to {0} accepted. Teleporting...",
+  "tpa.accepted_by_target": "You have accepted the teleport request from {0}.",
+  "tpthere.accepted_tpa": "Teleport request from {0} accepted. Teleporting...",
+  "tpthere.accepted_by_requester": "{0} has accepted your teleport request.",
+  "tpa.denied": "You have denied the teleport request.",
+  "tpa.denied_by_target": "{0} has denied your teleport request.",
+  "tpa.request_cancelled": "You have canceled your teleport request.",
+  "tpa.cancelled_by_requester": "{0} has canceled their teleport request.",
+  "tpa.not_a_player": "This command can only be used by a player."
+}

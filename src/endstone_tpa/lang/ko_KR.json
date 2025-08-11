@@ -1,0 +1,23 @@
+{
+  "tpa.command.usage": "사용법: /tpa <플레이어>",
+  "tpthere.command.usage": "사용법: /tpthere <플레이어>",
+  "tpa.player_not_found": "'{0}' 플레이어를 찾을 수 없습니다.",
+  "tpa.cannot_request_self": "자신에게 텔레포트 요청을 보낼 수 없습니다.",
+  "tpa.request_sent": "{0}님에게 텔레포트 요청을 보냈습니다.",
+  "tpa.request_received": "{0}님이 당신에게 텔레포트를 요청했습니다.",
+  "tpthere.request_received": "{0}님이 당신을 자신에게 텔레포트하도록 요청했습니다.",
+  "tpa.request_helper": "/tpaccept로 수락하거나 /tpdeny로 거절하세요. 요청은 60초 후에 만료됩니다.",
+  "tpa.no_pending_request": "대기 중인 텔레포트 요청이 없습니다.",
+  "tpa.request_expired": "이 텔레포트 요청은 만료되었습니다.",
+  "tpa.requester_expired": "{0}님에게 보낸 텔레포트 요청이 만료되었습니다.",
+  "tpa.requester_not_online": "요청을 보낸 플레이어가 더 이상 온라인 상태가 아닙니다.",
+  "tpa.accepted_tpa": "{0}님의 텔레포트 요청을 수락했습니다. 텔레포트 중...",
+  "tpa.accepted_by_target": "{0}님의 텔레포트 요청을 수락했습니다.",
+  "tpthere.accepted_tpa": "{0}님의 텔레포트 요청을 수락했습니다. 텔레포트 중...",
+  "tpthere.accepted_by_requester": "{0}님이 당신의 텔레포트 요청을 수락했습니다.",
+  "tpa.denied": "텔레포트 요청을 거절했습니다.",
+  "tpa.denied_by_target": "{0}님이 당신의 텔레포트 요청을 거절했습니다.",
+  "tpa.request_cancelled": "텔레포트 요청을 취소했습니다.",
+  "tpa.cancelled_by_requester": "{0}님이 텔레포트 요청을 취소했습니다.",
+  "tpa.not_a_player": "이 명령어는 플레이어만 사용할 수 있습니다."
+}
