@@ -19,5 +19,10 @@
   "tpa.denied_by_target": "{0} has denied your teleport request.",
   "tpa.request_cancelled": "You have canceled your teleport request.",
   "tpa.cancelled_by_requester": "{0} has canceled their teleport request.",
-  "tpa.not_a_player": "This command can only be used by a player."
+  "tpa.not_a_player": "This command can only be used by a player.",
+  "tpa.form.title": "Teleport Request",
+  "tpa.form.content.tpa": "{0} has requested to teleport to you.",
+  "tpa.form.content.tpthere": "{0} has requested you to teleport to them.",
+  "tpa.form.accept": "Accept",
+  "tpa.form.deny": "Deny"
 }

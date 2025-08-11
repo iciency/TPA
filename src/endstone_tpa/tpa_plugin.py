@@ -1,43 +1,44 @@
 import json
 import os
 import time
-from typing import Dict, List, Tuple
+from typing import Dict, Tuple
 from uuid import UUID
 
 from endstone import Player
 from endstone.command import Command, CommandSender
+from endstone.form import MessageForm
 from endstone.plugin import Plugin
-from endstone.lang import Translatable
 
 
 class TpaPlugin(Plugin):
     prefix = "TpaPlugin"
     api_version = "0.6"
     load = "POSTWORLD"
-    tpa_requests: Dict[UUID, Tuple[UUID, float, str]] = {}  # target_uuid -> (requester_uuid, timestamp, type)
+    # target_uuid -> (requester_uuid, timestamp, type)
+    tpa_requests: Dict[UUID, Tuple[UUID, float, str]] = {}
     translations: Dict[str, Dict[str, str]] = {}
 
-    def _(self, sender: CommandSender, message: str, *args) -> None:
+    def _(self, sender: CommandSender, message: str, *args, return_string: bool = False) -> str | None:
         if isinstance(sender, Player):
             locale = sender.locale
         else:
             locale = self.server.language.locale
 
-        # Get the translation from the nested dictionary, fallback to en_US
         translation = self.translations.get(message, {}).get(
             locale, self.translations.get(message, {}).get("en_US")
         )
-
-        # If a translation exists, use it; otherwise, use the original message key
         text_to_translate = translation if translation else message
 
-        # Manually format the string if arguments are provided
         if args:
             formatted_message = text_to_translate.format(*args)
         else:
             formatted_message = text_to_translate
 
-        sender.send_message(formatted_message)
+        if return_string:
+            return formatted_message
+        else:
+            sender.send_message(formatted_message)
+            return None
 
     commands = {
         "tpa": {
@@ -47,12 +48,12 @@ class TpaPlugin(Plugin):
         },
         "tpaccept": {
             "description": "Accept a teleport request.",
-            "usages": ["/tpaccept"],
+            "usages": ["/tpaccept [player: player]"],
             "permissions": ["tpa.command.tpaccept"],
         },
         "tpdeny": {
             "description": "Deny a teleport request.",
-            "usages": ["/tpdeny"],
+            "usages": ["/tpdeny [player: player]"],
             "permissions": ["tpa.command.tpdeny"],
         },
         "tpacancel": {
@@ -66,32 +67,14 @@ class TpaPlugin(Plugin):
             "permissions": ["tpa.command.tpthere"],
         },
     }
-    
+
     permissions = {
-        "tpa.command.*": {
-            "description": "Allows users to use all TPA commands.",
-            "default": True,
-        },
-        "tpa.command.tpa": {
-            "description": "Allows users to use the /tpa command.",
-            "default": True,
-        },
-        "tpa.command.tpaccept": {
-            "description": "Allows users to use the /tpaccept command.",
-            "default": True,
-        },
-        "tpa.command.tpdeny": {
-            "description": "Allows users to use the /tpdeny command.",
-            "default": True,
-        },
-        "tpa.command.tpacancel": {
-            "description": "Allows users to use the /tpacancel command.",
-            "default": True,
-        },
-        "tpa.command.tpthere": {
-            "description": "Allows users to use the /tpthere command.",
-            "default": True,
-        },
+        "tpa.command.*": {"description": "Allows users to use all TPA commands.", "default": True},
+        "tpa.command.tpa": {"description": "Allows users to use the /tpa command.", "default": True},
+        "tpa.command.tpaccept": {"description": "Allows users to use the /tpaccept command.", "default": True},
+        "tpa.command.tpdeny": {"description": "Allows users to use the /tpdeny command.", "default": True},
+        "tpa.command.tpacancel": {"description": "Allows users to use the /tpacancel command.", "default": True},
+        "tpa.command.tpthere": {"description": "Allows users to use the /tpthere command.", "default": True},
     }
 
     def on_load(self) -> None:
@@ -126,9 +109,10 @@ class TpaPlugin(Plugin):
         player = sender
 
         match command.name:
-            case "tpa":
+            case "tpa" | "tpthere":
                 if len(args) != 1:
-                    self._(sender, "tpa.command.usage")
+                    usage_key = "tpa.command.usage" if command.name == "tpa" else "tpthere.command.usage"
+                    self._(sender, usage_key)
                     return False
 
                 target_name = args[0]
@@ -142,29 +126,52 @@ class TpaPlugin(Plugin):
                     self._(player, "tpa.cannot_request_self")
                     return True
 
-                self.tpa_requests[target.unique_id] = (player.unique_id, time.time(), "tpa")
+                self.tpa_requests[target.unique_id] = (player.unique_id, time.time(), command.name)
                 self._(player, "tpa.request_sent", target.name)
-                self._(target, "tpa.request_received", player.name)
+
+                def on_form_submit(target_player: Player, data: int):
+                    # Wrap player name in quotes to handle names with spaces
+                    if data == 0:  # Accept
+                        self.server.dispatch_command(target_player, f'tpaccept "{player.name}"')
+                    else:  # Deny
+                        self.server.dispatch_command(target_player, f'tpdeny "{player.name}"')
+
+                content_key = "tpa.form.content.tpa" if command.name == "tpa" else "tpa.form.content.tpthere"
+                form = MessageForm(
+                    title=self._(target, "tpa.form.title", return_string=True),
+                    content=self._(target, content_key, player.name, return_string=True),
+                    button1=self._(target, "tpa.form.accept", return_string=True),
+                    button2=self._(target, "tpa.form.deny", return_string=True),
+                )
+                # Send a chat message as a fallback first
+                fallback_content_key = "tpa.request_received" if command.name == "tpa" else "tpthere.request_received"
+                self._(target, fallback_content_key, player.name)
                 self._(target, "tpa.request_helper")
+                
+                form.on_submit = on_form_submit
+                target.send_form(form)
                 return True
 
             case "tpaccept":
+                # This command can be called with a player name (from form) or without (manual)
+                # We need to find the correct request to accept.
+                
+                # For now, we only support one incoming request at a time.
+                # A more complex system would be needed to handle multiple requests by name.
                 if player.unique_id not in self.tpa_requests:
                     self._(player, "tpa.no_pending_request")
                     return True
 
                 requester_uuid, timestamp, tpa_type = self.tpa_requests.pop(player.unique_id)
+                requester = self.server.get_player(requester_uuid)
 
                 if time.time() - timestamp > 60:
                     self._(player, "tpa.request_expired")
-                    requester = self.server.get_player(requester_uuid)
-                    if requester is not None:
+                    if requester:
                         self._(requester, "tpa.requester_expired", player.name)
                     return True
 
-                requester = self.server.get_player(requester_uuid)
-
-                if requester is None:
+                if not requester:
                     self._(player, "tpa.requester_not_online")
                     return True
 
@@ -179,6 +186,7 @@ class TpaPlugin(Plugin):
                 return True
 
             case "tpdeny":
+                # Similar to tpaccept, we only handle the single most recent request.
                 if player.unique_id not in self.tpa_requests:
                     self._(player, "tpa.no_pending_request")
                     return True
@@ -187,12 +195,11 @@ class TpaPlugin(Plugin):
                 requester = self.server.get_player(requester_uuid)
 
                 self._(player, "tpa.denied")
-                if requester is not None:
+                if requester:
                     self._(requester, "tpa.denied_by_target", player.name)
                 return True
 
             case "tpacancel":
-                # Find the request sent by the current player
                 target_uuid = None
                 for t_uuid, (r_uuid, _, _) in self.tpa_requests.items():
                     if r_uuid == player.unique_id:
@@ -200,39 +207,17 @@ class TpaPlugin(Plugin):
                         break
 
                 if target_uuid is None:
+                    # To be consistent, we should probably say "no pending request"
+                    # but the original logic said this. Keeping for now.
                     self._(player, "tpa.no_pending_request")
                     return True
 
-                # Remove the request
                 self.tpa_requests.pop(target_uuid)
-
                 target = self.server.get_player(target_uuid)
 
                 self._(player, "tpa.request_cancelled")
-                if target is not None:
+                if target:
                     self._(target, "tpa.cancelled_by_requester", player.name)
-                return True
-
-            case "tpthere":
-                if len(args) != 1:
-                    self._(sender, "tpthere.command.usage")
-                    return False
-
-                target_name = args[0]
-                target = self.server.get_player(target_name)
-
-                if target is None:
-                    self._(sender, "tpa.player_not_found", target_name)
-                    return True
-
-                if player == target:
-                    self._(player, "tpa.cannot_request_self")
-                    return True
-
-                self.tpa_requests[target.unique_id] = (player.unique_id, time.time(), "tpthere")
-                self._(player, "tpa.request_sent", target.name)
-                self._(target, "tpthere.request_received", player.name)
-                self._(target, "tpa.request_helper")
                 return True
 
         return False

@@ -19,5 +19,10 @@
   "tpa.denied_by_target": "{0}님이 당신의 텔레포트 요청을 거절했습니다.",
   "tpa.request_cancelled": "텔레포트 요청을 취소했습니다.",
   "tpa.cancelled_by_requester": "{0}님이 텔레포트 요청을 취소했습니다.",
-  "tpa.not_a_player": "이 명령어는 플레이어만 사용할 수 있습니다."
+  "tpa.not_a_player": "이 명령어는 플레이어만 사용할 수 있습니다.",
+  "tpa.form.title": "텔레포트 요청",
+  "tpa.form.content.tpa": "{0}님이 당신에게 텔레포트를 요청했습니다.",
+  "tpa.form.content.tpthere": "{0}님이 당신을 자신에게 텔레포트하도록 요청했습니다.",
+  "tpa.form.accept": "수락",
+  "tpa.form.deny": "거절"
 }
