@@ -73,6 +73,26 @@ class TpaPlugin(Plugin):
         self.logger.info("TPA plugin enabled.")
         self.handlers = preloaded_handlers
         self.register_events(self)
+        self.server.scheduler.run_task_timer(self, self.cleanup_expired_requests, delay=20, period=20)
+
+    def cleanup_expired_requests(self):
+        current_time = time.time()
+        # Iterate over a copy of the items to allow modification during iteration
+        for target_uuid, requests in list(self.tpa_requests.items()):
+            for requester_uuid, (timestamp, _) in list(requests.items()):
+                if current_time - timestamp > 60:
+                    # Remove the specific expired request
+                    requests.pop(requester_uuid)
+                    
+                    # Notify players if they are online
+                    target = self.server.get_player(target_uuid)
+                    requester = self.server.get_player(requester_uuid)
+                    if target and requester:
+                        self._(requester, "tpa.requester_expired", target.name)
+
+            # If a target has no more pending requests, remove the entry
+            if not requests:
+                self.tpa_requests.pop(target_uuid)
 
     def on_disable(self) -> None:
         self.logger.info("TPA plugin disabled.")
