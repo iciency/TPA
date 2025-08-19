@@ -62,7 +62,8 @@ def handle_tpa_request(plugin, sender: Player, target: Player, request_type: str
     )
     
     plugin._(target, fallback_content_key, sender.name)
-    plugin._(target, "tpa.request_helper")
+    timeout = plugin.plugin_config.get("request-timeout", 60)
+    plugin._(target, "tpa.request_helper", timeout)
     
     form.on_submit = on_form_submit
     target.send_form(form)

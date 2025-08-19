@@ -6,7 +6,7 @@
   "tpa.request_sent": "{0}님에게 텔레포트 요청을 보냈습니다.",
   "tpa.request_received": "{0}님이 당신에게 텔레포트를 요청했습니다.",
   "tpthere.request_received": "{0}님이 당신을 자신에게 텔레포트하도록 요청했습니다.",
-  "tpa.request_helper": "/tpaccept로 수락하거나 /tpdeny로 거절하세요. 요청은 60초 후에 만료됩니다.",
+  "tpa.request_helper": "/tpaccept로 수락하거나 /tpdeny로 거절하세요. 요청은 {0}초 후에 만료됩니다.",
   "tpa.no_pending_request": "대기 중인 텔레포트 요청이 없습니다.",
   "tpa.no_request_from_player": "{0}님에게서 온 텔레포트 요청이 없습니다.",
   "tpa.multiple_requests": "여러 개의 요청이 있습니다. 플레이어 이름을 지정해주세요.",

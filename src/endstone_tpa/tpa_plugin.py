@@ -54,6 +54,7 @@ class TpaPlugin(Plugin):
 
     def on_load(self) -> None:
         self.logger.info("TpaPlugin loaded.")
+        self.load_config()
         lang_dir = os.path.join(os.path.dirname(__file__), "lang")
         if not os.path.exists(lang_dir):
             self.logger.warning(f"Language directory not found at {lang_dir}")
@@ -69,18 +70,34 @@ class TpaPlugin(Plugin):
                             self.translations[key] = {}
                         self.translations[key][locale] = value
 
+    def load_config(self):
+        config_path = os.path.join(self.data_folder, "config.json")
+        default_config = {
+            "request-timeout": 60,
+        }
+        
+        if not os.path.exists(config_path):
+            os.makedirs(os.path.dirname(config_path), exist_ok=True)
+            self.plugin_config = default_config
+            with open(config_path, 'w') as f:
+                json.dump(self.plugin_config, f, indent=4)
+        else:
+            with open(config_path, 'r') as f:
+                self.plugin_config = json.load(f)
+
     def on_enable(self) -> None:
         self.logger.info("TPA plugin enabled.")
         self.handlers = preloaded_handlers
         self.register_events(self)
-        self.server.scheduler.run_task_timer(self, self.cleanup_expired_requests, delay=20, period=20)
+        self.server.scheduler.run_task(self, self.cleanup_expired_requests, delay=20, period=20)
 
     def cleanup_expired_requests(self):
         current_time = time.time()
+        timeout = self.plugin_config.get("request-timeout", 60)
         # Iterate over a copy of the items to allow modification during iteration
         for target_uuid, requests in list(self.tpa_requests.items()):
             for requester_uuid, (timestamp, _) in list(requests.items()):
-                if current_time - timestamp > 60:
+                if current_time - timestamp > timeout:
                     # Remove the specific expired request
                     requests.pop(requester_uuid)
                     

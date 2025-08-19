@@ -39,7 +39,8 @@ def handler(plugin, sender, args):
     timestamp, tpa_type = requests.pop(requester_uuid)
     requester = plugin.server.get_player(requester_uuid)
 
-    if time.time() - timestamp > 60:
+    timeout = plugin.plugin_config.get("request-timeout", 60)
+    if time.time() - timestamp > timeout:
         plugin._(player, "tpa.request_expired")
         if requester:
             plugin._(requester, "tpa.requester_expired", player.name)
