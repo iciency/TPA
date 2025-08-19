@@ -5,16 +5,13 @@ build-backend = "hatchling.build"
 [project]
 name = "endstone-tpa"
 version = "2.0.1"
-dependencies = []
-authors = [
-    { name = "Endstone Developers", email = "hello@endstone.dev" },
-]
+
 description = "A TPA plugin for Endstone servers"
 readme = "README.md"
 keywords = ["endstone", "plugin", "tpa"]
 
 [project.urls]
-Homepage = "https://github.com/EndstoneMC/python-example-plugin"
+Homepage = "https://github.com/iciency/TPA"
 
 [project.entry-points."endstone"]
 tpa = "endstone_tpa:TpaPlugin"
