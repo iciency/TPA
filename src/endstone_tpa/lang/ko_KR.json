@@ -8,6 +8,8 @@
   "tpthere.request_received": "{0}님이 당신을 자신에게 텔레포트하도록 요청했습니다.",
   "tpa.request_helper": "/tpaccept로 수락하거나 /tpdeny로 거절하세요. 요청은 60초 후에 만료됩니다.",
   "tpa.no_pending_request": "대기 중인 텔레포트 요청이 없습니다.",
+  "tpa.no_request_from_player": "{0}님에게서 온 텔레포트 요청이 없습니다.",
+  "tpa.multiple_requests": "여러 개의 요청이 있습니다. 플레이어 이름을 지정해주세요.",
   "tpa.request_expired": "이 텔레포트 요청은 만료되었습니다.",
   "tpa.requester_expired": "{0}님에게 보낸 텔레포트 요청이 만료되었습니다.",
   "tpa.requester_not_online": "요청을 보낸 플레이어가 더 이상 온라인 상태가 아닙니다.",

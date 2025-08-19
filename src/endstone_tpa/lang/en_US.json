@@ -8,6 +8,8 @@
   "tpthere.request_received": "{0} has requested you to teleport to them.",
   "tpa.request_helper": "Type /tpaccept to accept or /tpdeny to deny. The request will expire in 60 seconds.",
   "tpa.no_pending_request": "You have no pending teleport requests.",
+  "tpa.no_request_from_player": "You have no pending teleport request from {0}.",
+  "tpa.multiple_requests": "You have multiple pending requests. Please specify a player.",
   "tpa.request_expired": "This teleport request has expired.",
   "tpa.requester_expired": "Your teleport request to {0} has expired.",
   "tpa.requester_not_online": "The player who sent the request is no longer online.",
