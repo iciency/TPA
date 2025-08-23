@@ -52,10 +52,10 @@ def handler(plugin, sender, args):
 
     if tpa_type == "tpa":
         requester.teleport(player.location)
-        plugin._(requester, "tpa.accepted_tpa", player.name)
-        plugin._(player, "tpa.accepted_by_target", requester.name)
+        plugin._(requester, "tpa.sender_accepted", player.name)
+        plugin._(player, "tpa.request_accepted", requester.name)
     elif tpa_type == "tpthere":
         player.teleport(requester.location)
-        plugin._(player, "tpthere.accepted_tpa", requester.name)
-        plugin._(requester, "tpthere.accepted_by_requester", player.name)
+        plugin._(player, "tpthere.sender_accepted", requester.name)
+        plugin._(requester, "tpthere.request_accepted", player.name)
     return True
