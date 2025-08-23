@@ -48,6 +48,17 @@ def handle_tpa_request(plugin, sender: Player, target: Player, request_type: str
         plugin._(sender, "tpa.target_blocking_all", target.name)
         return
 
+    if target.unique_id in plugin.tpa_auto_accept:
+        if request_type == "tpa":
+            sender.teleport(target.location)
+            plugin._(sender, "tpa.sender_accepted", target.name)
+            plugin._(target, "tpa.request_accepted", sender.name)
+        elif request_type == "tpthere":
+            target.teleport(sender.location)
+            plugin._(target, "tpthere.sender_accepted", sender.name)
+            plugin._(sender, "tpthere.request_accepted", target.name)
+        return
+
     if target.unique_id not in plugin.tpa_requests:
         plugin.tpa_requests[target.unique_id] = {}
     plugin.tpa_requests[target.unique_id][sender.unique_id] = (time.time(), request_type)

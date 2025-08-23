@@ -38,5 +38,7 @@
     "tpa.target_blocking_you": "§cYou cannot send a TPA request to §e{0}§c because they have blocked you.",
     "tpa.all_block_enabled": "§aYou are now blocking all TPA requests.",
     "tpa.all_block_disabled": "§aYou are no longer blocking all TPA requests.",
-    "tpa.target_blocking_all": "§c§e{0}§c is currently blocking all TPA requests."
+    "tpa.target_blocking_all": "§c§e{0}§c is currently blocking all TPA requests.",
+    "tpa.auto_accept_enabled": "§aYou are now automatically accepting all TPA requests.",
+    "tpa.auto_accept_disabled": "§aYou are no longer automatically accepting TPA requests."
 }

@@ -38,5 +38,7 @@
     "tpa.target_blocking_you": "§c§e{0}§c님이 당신의 TPA 요청을 차단하여 보낼 수 없습니다.",
     "tpa.all_block_enabled": "§a이제 모든 TPA 요청을 차단합니다.",
     "tpa.all_block_disabled": "§a이제 모든 TPA 요청을 차단하지 않습니다.",
-    "tpa.target_blocking_all": "§c§e{0}§c님이 모든 TPA 요청을 차단하고 있어 요청을 보낼 수 없습니다."
+    "tpa.target_blocking_all": "§c§e{0}§c님이 모든 TPA 요청을 차단하고 있어 요청을 보낼 수 없습니다.",
+    "tpa.auto_accept_enabled": "§a이제 모든 TPA 요청을 자동으로 수락합니다.",
+    "tpa.auto_accept_disabled": "§a이제 모든 TPA 요청을 자동으로 수락하지 않습니다."
 }
