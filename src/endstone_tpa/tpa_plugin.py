@@ -19,6 +19,8 @@ class TpaPlugin(Plugin):
     tpa_requests: Dict[UUID, Dict[UUID, Tuple[float, str]]] = {}
     # player_uuid -> [blocked_player_uuid]
     tpa_blocks: Dict[UUID, list[UUID]] = {}
+    # list of player_uuid
+    tpa_all_blocks: list[UUID] = []
     translations: Dict[str, Dict[str, str]] = {}
 
     def _(self, sender: CommandSender, message: str, *args, return_string: bool = False) -> str | None:
@@ -53,6 +55,7 @@ class TpaPlugin(Plugin):
         "tpa.command.tpacancel": {"description": "Allows users to use the /tpacancel command.", "default": True},
         "tpa.command.tpthere": {"description": "Allows users to use the /tpthere command.", "default": True},
         "tpa.command.tpablock": {"description": "Allows users to use the /tpablock command.", "default": True},
+        "tpa.command.tpaallblock": {"description": "Allows users to use the /tpaallblock command.", "default": True},
     }
 
     def on_load(self) -> None:
@@ -78,6 +81,7 @@ class TpaPlugin(Plugin):
         default_config = {
             "request-timeout": 60,
             "blocks": {},
+            "all_blocks": [],
         }
         
         if not os.path.exists(config_path):
@@ -90,6 +94,7 @@ class TpaPlugin(Plugin):
                 self.plugin_config = json.load(f)
         
         self.tpa_blocks = {UUID(k): [UUID(v) for v in val] for k, val in self.plugin_config.get("blocks", {}).items()}
+        self.tpa_all_blocks = [UUID(v) for v in self.plugin_config.get("all_blocks", [])]
 
     def on_enable(self) -> None:
         self.logger.info("TPA plugin enabled.")
