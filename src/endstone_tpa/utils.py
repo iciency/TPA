@@ -40,6 +40,10 @@ def handle_tpa_request(plugin, sender: Player, target: Player, request_type: str
         plugin._(sender, "tpa.cannot_request_self")
         return
 
+    if sender.unique_id in plugin.tpa_blocks.get(target.unique_id, []):
+        plugin._(sender, "tpa.target_blocking_you", target.name)
+        return
+
     if target.unique_id not in plugin.tpa_requests:
         plugin.tpa_requests[target.unique_id] = {}
     plugin.tpa_requests[target.unique_id][sender.unique_id] = (time.time(), request_type)
@@ -63,7 +67,7 @@ def handle_tpa_request(plugin, sender: Player, target: Player, request_type: str
     
     plugin._(target, fallback_content_key, sender.name)
     timeout = plugin.plugin_config.get("request-timeout", 60)
-    plugin._(target, "tpa.request_helper", timeout)
+    plugin._(target, "tpa.request_helper", sender.name, timeout)
     
     form.on_submit = on_form_submit
     target.send_form(form)
