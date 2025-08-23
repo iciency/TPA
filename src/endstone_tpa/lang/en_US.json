@@ -29,7 +29,7 @@
     "tpa.no_request_to_cancel": "§cYou have no pending TPA request to §e{0}§c.",
     "tpa.block.usage": "§cUsage: §e/tpablock <player>",
     "tpa.cannot_block_self": "§cYou cannot block yourself.",
-    "tpa.already_blocked": "§cYou have already blocked §e{0}§c.",
+    "tpa.player_unblocked": "§aYou have unblocked TPA requests from §e{0}§a.",
     "tpa.player_blocked": "§aYou have blocked TPA requests from §e{0}§a.",
     "tpa.target_blocking_you": "§cYou cannot send a TPA request to §e{0}§c because they have blocked you.",
     "tpa.all_block_enabled": "§aYou are now blocking all TPA requests.",

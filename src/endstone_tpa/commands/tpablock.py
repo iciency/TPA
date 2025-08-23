@@ -31,17 +31,17 @@ def handler(plugin, sender, args):
 
     player_blocks = plugin.tpa_blocks.get(sender.unique_id, [])
     if block_target.unique_id in player_blocks:
-        plugin._(sender, "tpa.already_blocked", block_target.name)
-        return True
+        player_blocks.remove(block_target.unique_id)
+        plugin._(sender, "tpa.player_unblocked", block_target.name)
+    else:
+        player_blocks.append(block_target.unique_id)
+        plugin._(sender, "tpa.player_blocked", block_target.name)
 
-    player_blocks.append(block_target.unique_id)
     plugin.tpa_blocks[sender.unique_id] = player_blocks
-    
+
     # Save to config
     plugin.plugin_config["blocks"] = {str(k): [str(v) for v in val] for k, val in plugin.tpa_blocks.items()}
     with open(plugin.data_folder / "config.json", "w") as f:
         import json
         json.dump(plugin.plugin_config, f, indent=4)
-
-    plugin._(sender, "tpa.player_blocked", block_target.name)
     return True
